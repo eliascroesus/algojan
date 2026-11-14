@@ -126,7 +126,7 @@ function confetti() {
   const c = document.createElement("canvas"); c.className = "confetti"; document.body.appendChild(c);
   const x = c.getContext("2d"), dpr = devicePixelRatio || 1;
   c.width = innerWidth * dpr; c.height = innerHeight * dpr; x.scale(dpr, dpr);
-  const cols = ["#ffb400", "#f6c623", "#e8601c", "#ecdc52", "#17120f"];
+  const cols = ["#ee6a1f", "#16120f", "#f4a46e"];
   const ps = Array.from({ length: 140 }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .3,
     vx: (Math.random() - .5) * 14, vy: -Math.random() * 13 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, c: cols[Math.random() * cols.length | 0] }));
   let t = 0;
