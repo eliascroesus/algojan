@@ -1,0 +1,26 @@
+# AlgoJan funnel
+
+The structure is copied from Jean Ivan's funnel and the look from the inspiration (warm off-white page, orange accents,
+gold buttons, list of bonuses with prices). Plain static HTML, CSS and JS with no build step. It deploys to Vercel as-is (`vercel.json` sends `/` to `/discord`).
+
+| Page | What's on it |
+| --- | --- |
+| `/discord` | Opt-in: headline + "Join The FREE Discord" form → **Everything You Get** (free AI bots & strategies, $3,000 value → FREE) → **Who Am I & Why Is This Free** (Jean's story) → **results wall** |
+| `/apply` | Confetti for new opt-ins, Step #1 the **vertical (9:16) VSL**, Step #2 the application one question at a time → booking calendar (or the free Discord for answers that don't qualify) |
+| `/booked` | "Your call is NOT confirmed yet": Step #1 thank-you video (vertical), Step #2 confirm (email / text / add to calendar), Step #3 FAQs |
+
+## Things to fill in: `CONFIG` at the top of `assets/funnel.js`
+
+- `videos.vsl`, `videos.nextSteps`: a Vimeo, YouTube (Shorts work) or `.mp4` link. Empty shows a "Video coming soon" placeholder.
+- `calendarUrl`: the GoHighLevel, Calendly or iClosed booking link. In the calendar's own settings, set the redirect after booking to `/booked`.
+- `leadWebhookUrl`: where opt-ins and applications are POSTed as JSON (Apps Script, Zapier, Make, GHL inbound webhook).
+- `discordUrl`: the invite link for people who don't qualify.
+- `results`: put the screenshots in `assets/results/` and list the file names, e.g. `["result-1.webp", "result-2.jpg"]`.
+  They show in a masonry wall like the inspiration. Until then the page shows 9 placeholder tiles.
+- The application questions are `QUESTIONS` in the same file, and `disqualify` lists the investment answers that don't get the calendar.
+
+The bot names and prices in the list of bonuses are in `discord/index.html`. Jean's photos are in `assets/coach/`.
+
+The footers link to `/privacy`, `/terms` and `/disclaimer`, but those pages aren't in this repo yet. They can be copied from the jeanivanfunnel repo.
+
+Preview locally: `python3 -m http.server 8000`, then open http://localhost:8000/discord/
