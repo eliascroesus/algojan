@@ -22,6 +22,26 @@ const CONFIG = {
   // Results wall on /discord. Put the screenshots in /assets/results/ and list them here, in the order to show them.
   // e.g. ["result-1.webp", "result-2.jpg", ["result-3.png", "Optional caption"]]
   results: [],
+  // FAQ videos on /booked (vertical, like the VSL): [question, Vimeo / YouTube / .mp4 link]. Empty link = placeholder.
+  faqVideos: [
+    ["What's Inside AlgoJan?", ""],
+    ["Is AlgoJan Legit?", ""],
+    ["Who Is This For?", ""],
+    ["How Much Time Do I Need To Put In?", ""],
+  ],
+  // "Just joined" popup in the corner of /discord. PLACEHOLDER NAMES: before going live, feed this from real
+  // opt-ins (export from your CRM, or set recentJoinsUrl to a JSON list of {name, city, at}). Showing made-up
+  // sign-ups as real is deceptive and breaks FTC and Meta ad rules. Set recentJoins to [] to turn it off.
+  recentJoinsUrl: "",
+  recentJoins: [
+    { name: "Tristan", city: "Dallas" },
+    { name: "Marcus", city: "Atlanta" },
+    { name: "Daniel", city: "Toronto" },
+    { name: "Chris", city: "Houston" },
+    { name: "Ryan", city: "London" },
+    { name: "Andre", city: "Miami" },
+  ],
+  joinedPopup: { firstAfter: 6, every: 14, showFor: 5 },   // seconds
 };
 
 // The application on /apply, one question at a time. Visitors who didn't opt in first are asked name, email, phone too.
@@ -120,6 +140,30 @@ function mountVideo(box, url, { autoplay = false } = {}) {
   box.innerHTML = `<iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Video"></iframe>`;
 }
 
+/* ---------- "just joined" popup ---------- */
+async function joinedPopup() {
+  const el = $("#joined"); if (!el) return;
+  let list = CONFIG.recentJoins;
+  if (CONFIG.recentJoinsUrl) { try { list = await (await fetch(CONFIG.recentJoinsUrl)).json(); } catch {} }
+  if (!list || !list.length) return;
+  const { firstAfter, every, showFor } = CONFIG.joinedPopup;
+  const ago = at => { const sec = Math.max(1, Math.round((Date.now() - new Date(at)) / 1000));
+    return sec < 60 ? `${sec} seconds ago` : sec < 3600 ? `${Math.round(sec / 60)} min ago` : "Today"; };
+  let n = 0;
+  const show = () => {
+    if (document.hidden) return;
+    const p = list[n++ % list.length];
+    $("#joined-name").textContent = p.name;
+    $("#joined-city").textContent = p.city || "the US";
+    $("#joined-av").textContent = (p.name || "?")[0].toUpperCase();
+    $("#joined-when").textContent = p.at ? ago(p.at) : "Just now";
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add("in"));
+    setTimeout(() => el.classList.toggle("in", false), showFor * 1000);
+  };
+  setTimeout(() => { show(); setInterval(show, every * 1000); }, firstAfter * 1000);
+}
+
 /* ---------- confetti for people who just opted in ---------- */
 function confetti() {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -154,14 +198,14 @@ if (PAGE === "discord") {
 
   form.addEventListener("submit", e => {
     e.preventDefault();
-    $$(".input", form).forEach(i => i.classList.remove("bad"));
+    $$(".bad", form).forEach(i => i.classList.remove("bad"));
     const name = tidyName(form.elements.name.value), email = form.email.value.trim(), phone = digits(form.phone.value);
     const bad = [];
     if (name.length < 2) bad.push([form.elements.name, "Please enter your name."]);
     if (phone.length < 6) bad.push([form.phone, "Please enter a valid phone number."]);
     if (!emailOk(email)) bad.push([form.email, "Please enter a valid email."]);
     if (bad.length) {
-      bad.forEach(([i]) => i.classList.add("bad"));
+      bad.forEach(([i]) => (i.closest(".ifield") || i).classList.add("bad"));
       err.textContent = bad[0][1]; err.hidden = false; bad[0][0].focus(); return;
     }
     err.hidden = true;
@@ -171,6 +215,8 @@ if (PAGE === "discord") {
     const btn = $("button[type=submit]", form); btn.disabled = true; btn.firstChild.textContent = "Sending your invite… ";
     send("optin", lead).finally(() => go(CONFIG.pages.apply, "joined=1"));
   });
+
+  joinedPopup();
 
   // Results wall
   const wall = $("#results");
@@ -278,6 +324,11 @@ if (PAGE === "booked") {
   const g = $("#addcal-google"), o = $("#addcal-outlook");
   if (g) g.href = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${t}&details=${d}`;
   if (o) o.href = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${t}&body=${d}`;
+  const grid = $("#faq-videos");
+  if (grid) {
+    grid.innerHTML = CONFIG.faqVideos.map((_, n) => `<article class="vid"><div class="vsl" id="faq-${n}"></div><h3></h3></article>`).join("");
+    CONFIG.faqVideos.forEach(([q, url], n) => { $(`#faq-${n} + h3`).textContent = q; mountVideo($(`#faq-${n}`), url); });
+  }
   if (lead.name) { const n = $("#booked-name"); if (n) n.textContent = lead.name.split(" ")[0] + ", wait!"; }
 }
 

@@ -7,7 +7,7 @@ gold buttons, list of bonuses with prices). Plain static HTML, CSS and JS with n
 | --- | --- |
 | `/discord` | Opt-in: headline + "Join The FREE Discord" form → **Everything You Get** (free AI bots & strategies, $3,000 value → FREE) → **Who Am I & Why Is This Free** (Jean's story) → **results wall** |
 | `/apply` | Confetti for new opt-ins, Step #1 the **vertical (9:16) VSL**, Step #2 the application one question at a time → booking calendar (or the free Discord for answers that don't qualify) |
-| `/booked` | "Your call is NOT confirmed yet": Step #1 thank-you video (vertical), Step #2 confirm (email / text / add to calendar), Step #3 FAQs |
+| `/booked` | "Your call is NOT confirmed yet": Step #1 thank-you video (vertical), Step #2 confirm (email / text / add to calendar), Step #3 four vertical FAQ videos |
 
 ## Things to fill in: `CONFIG` at the top of `assets/funnel.js`
 
@@ -17,6 +17,11 @@ gold buttons, list of bonuses with prices). Plain static HTML, CSS and JS with n
 - `discordUrl`: the invite link for people who don't qualify.
 - `results`: put the screenshots in `assets/results/` and list the file names, e.g. `["result-1.webp", "result-2.jpg"]`.
   They show in a masonry wall like the inspiration. Until then the page shows 9 placeholder tiles.
+- `faqVideos`: the FAQ videos on `/booked` (What's inside, Is AlgoJan legit, Who is this for, How much time). Empty links show placeholders.
+- `recentJoins` / `recentJoinsUrl`: the "Tristan from Dallas just joined" popup on `/discord`. **The names in there now are
+  placeholders.** Before going live, feed it real opt-ins: point `recentJoinsUrl` at a JSON list of `{name, city, at}`
+  (then it shows "12 seconds ago" from the real time), or set `recentJoins: []` to turn it off. Made-up sign-ups shown as
+  real are deceptive and break FTC and Meta ad rules. Timing is in `joinedPopup`.
 - The application questions are `QUESTIONS` in the same file, and `disqualify` lists the investment answers that don't get the calendar.
 
 The bot names and prices in the list of bonuses are in `discord/index.html`. Jean's photos are in `assets/coach/`.
