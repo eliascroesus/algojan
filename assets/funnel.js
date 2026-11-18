@@ -14,14 +14,14 @@ const CONFIG = {
   // Booking calendar shown on /apply after the application (GoHighLevel / Calendly / iClosed embed link).
   // In the calendar's own settings, set "redirect after booking" to https://YOURDOMAIN/booked.
   calendarUrl: "",
-  discordUrl: "https://discord.gg/your-invite",
+  discordUrl: "https://whop.com/algo-world-db94/",
   // Answers to the investment question that don't qualify for a call: they get the free Discord instead.
   disqualify: ["Under $500", "I don't have money to invest right now"],
-  call: { title: "Strategy Call With Jean", minutes: 30,
-    details: "Your strategy call with Jean (AlgoJan). The link to join is in your confirmation email and texts." },
+  call: { title: "Strategy Call With Jan", minutes: 30,
+    details: "Your strategy call with Jan (AlgoJan). The link to join is in your confirmation email and texts." },
   // Results wall on /discord. Put the screenshots in /assets/results/ and list them here, in the order to show them.
   // e.g. ["result-1.webp", "result-2.jpg", ["result-3.png", "Optional caption"]]
-  results: [],
+  results: Array.from({ length: 13 }, (_, i) => `/assets/v2/results/${i + 1}.webp`),   // same screenshots as /v2/discord
   // FAQ videos on /booked (vertical, like the VSL): [question, Vimeo / YouTube / .mp4 link]. Empty link = placeholder.
   faqVideos: [
     ["What's Inside AlgoJan?", ""],
@@ -59,7 +59,7 @@ const QUESTIONS = [
   { key: "obstacle", type: "long", title: "What's the #1 thing holding you back from that goal right now?", placeholder: "Type your answer here…" },
   { key: "instagram", type: "text", title: "What's your Instagram?", placeholder: "@handle", optional: true },
   { key: "investment", type: "choice",
-    title: "If this was a perfect fit, how much are you ready to invest in your trading and 1‑on‑1 help from Jean?",
+    title: "If this was a perfect fit, how much are you ready to invest in your trading and 1‑on‑1 help from Jan?",
     help: "Be honest. We'll help you either way.",
     options: ["$1,000 – $3,000", "$3,000 – $5,000", "$5,000+", "Under $500", "I don't have money to invest right now"] },
 ];
@@ -223,7 +223,7 @@ if (PAGE === "discord") {
   if (wall) {
     wall.innerHTML = CONFIG.results.length
       ? CONFIG.results.map(r => { const [file, cap] = Array.isArray(r) ? r : [r, ""];
-          return `<figure class="result"><img loading="lazy" decoding="async" src="/assets/results/${esc(file)}" alt="${esc(cap || "Community member result")}">${cap ? `<figcaption>${esc(cap)}</figcaption>` : ""}</figure>`; }).join("")
+          return `<figure class="result"><img loading="lazy" decoding="async" src="${file.startsWith("/") ? esc(file) : "/assets/results/" + esc(file)}" alt="${esc(cap || "Community member result")}">${cap ? `<figcaption>${esc(cap)}</figcaption>` : ""}</figure>`; }).join("")
       : Array.from({ length: 9 }, (_, i) => `<div class="result result--empty">Result screenshot ${i + 1}<br>(add to /assets/results)</div>`).join("");
   }
 }

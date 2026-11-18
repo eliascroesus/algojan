@@ -6,13 +6,13 @@ const V2 = {
   video: "",
   // The proof row under the button. Use REAL numbers only. Leave a value "" to hide that item.
   stats: {
-    rating: "4.9",          // average rating
+    rating: "",             // average rating, e.g. "4.9" — Jan's real Whop rating (hidden until filled in)
     reviews: "",            // number of reviews, e.g. "162" (hidden until you fill it in)
-    reviewsLink: "",        // where people can read them (Trustpilot, Whop…), optional
-    members: "614+",        // people in the Discord
+    reviewsLink: "https://whop.com/algo-world-db94/",   // where people can read the reviews
+    members: "",            // people in the community, e.g. "1,200+" (hidden until filled in)
     extra: "9 AI bots",     // third item, e.g. "$250,000+ in member payouts" once you can back it up
   },
-  // Background collage + results wall: upload images named 1.jpg, 2.png, 3.webp… (no gaps) into these folders.
+  // Background collage + results wall: numbered images (1.webp, 2.jpg, 3.png…, no gaps) in these folders.
   // The page finds them by itself. See assets/v2/README.md.
   bgDir: "/assets/v2/bg/",
   resultsDir: "/assets/v2/results/",
