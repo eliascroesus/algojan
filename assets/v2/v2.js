@@ -1,102 +1,68 @@
-/* AlgoJan v2 (dark) — /v2/discord. The opt-in form, popup and sticky button come from /assets/funnel.js
+/* AlgoJan v2 (dark) — /v2/discord and /bots. The opt-in form, popup and sticky button come from /assets/funnel.js
    (this page says data-page="discord"); this file adds the dark page's own parts. */
 
 const V2 = {
-  // Horizontal VSL (16:9). Vimeo, YouTube, Wistia or .mp4 link. Empty = the "Bot Vault in 3 minutes" placeholder.
+  // Horizontal VSL (16:9). Vimeo, YouTube, Wistia or .mp4 link. Empty = the thumbnail only.
   video: "",
   // The proof row under the button. Use REAL numbers only. Leave a value "" to hide that item.
   stats: {
     rating: "",             // average rating, e.g. "4.9" — Jan's real Whop rating (hidden until filled in)
-    reviews: "",            // number of reviews, e.g. "162" (hidden until you fill it in)
+    reviews: "",            // number of reviews, e.g. "162" (hidden until filled in)
     reviewsLink: "https://whop.com/algo-world-db94/",   // where people can read the reviews
     members: "2,200+",      // people in the community
     // Always-true items shown after the ones above. Add a payouts total here only once you can back it up.
     extras: [["9", "AI bots included"], ["$0", "to join, no card"]],
   },
-  // Background collage + results wall: numbered images (1.webp, 2.jpg, 3.png…, no gaps) in these folders.
-  // The page finds them by itself. See assets/v2/README.md.
-  bgDir: "/assets/v2/bg/",
-  resultsDir: "/assets/v2/results/",
-  maxImages: 60,
+  // How many numbered images are in each folder (1.webp … N.webp). Bump the number after uploading more.
+  // bg/sm/ holds small copies for the background (faster); if one is missing the full image is used.
+  bgCount: 27,
+  resultsCount: 13,
 };
 
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
+  const list = (dir, n) => Array.from({ length: n }, (_, i) => `${dir}${i + 1}.webp`);
 
-  /* ---------- find numbered images in a folder: 1.jpg, 2.png, … ---------- */
-  const EXTS = ["jpg", "png", "webp", "jpeg"];
-  const tryLoad = src => new Promise(ok => { const i = new Image(); i.onload = () => ok(src); i.onerror = () => ok(null); i.src = src; });
-  async function findImages(dir) {
-    const found = [];
-    for (let n = 1; n <= V2.maxImages; n++) {
-      const hits = (await Promise.all(EXTS.map(e => tryLoad(`${dir}${n}.${e}`)))).filter(Boolean);
-      if (!hits.length) break;
-      found.push(hits[0]);
-    }
-    return found;
-  }
-
-  /* ---------- generated chart tile (used until real images are uploaded) ---------- */
-  const SYMBOLS = ["NQ1! · 5m", "ES1! · 15m", "XAUUSD · 5m", "EURUSD · 15m", "GBPUSD · 5m", "BTCUSD · 1h", "YM1! · 5m", "US30 · 1m"];
-  const BOTS = ["Liquidity Sweep Sniper", "London Breakout Bot", "NY Open Scalper", "Order Block Hunter", "FVG Reversal Algo", "Prop Firm Guardian"];
-  let seed = 7;
+  /* ---------- background: scattered, overlapping, tilted images ---------- */
+  let seed = 11;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  function chartTile(i) {
-    const W = 300, H = 210, n = 34, cw = (W - 30) / n;
-    let p = 100 + rnd() * 20, hi = -1e9, lo = 1e9; const c = [];
-    const drift = rnd() > .35 ? .5 : -.4;
-    for (let k = 0; k < n; k++) { const o = p, cl = o + (rnd() - .5) * 8 + drift; const h = Math.max(o, cl) + rnd() * 4, l = Math.min(o, cl) - rnd() * 4; c.push([o, h, l, cl]); p = cl; hi = Math.max(hi, h); lo = Math.min(lo, l); }
-    const y = v => 52 + (hi - v) / (hi - lo) * (H - 70);
-    const bars = c.map(([o, h, l, cl], k) => { const x = 15 + k * cw + cw / 2, up = cl >= o, col = up ? "#2fbf71" : "#e04848";
-      return `<line x1="${x}" x2="${x}" y1="${y(h)}" y2="${y(l)}" stroke="${col}" stroke-width="1"/><rect x="${x - cw * .32}" y="${y(Math.max(o, cl))}" width="${cw * .64}" height="${Math.max(1, Math.abs(y(o) - y(cl)))}" fill="${col}"/>`; }).join("");
-    const lvl = y(c[Math.floor(n * .4)][1]);
-    return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="${W}" height="${H}" fill="#101015"/>
-      <g stroke="rgba(255,255,255,.04)">${[60, 100, 140, 180].map(v => `<line x1="0" x2="${W}" y1="${v}" y2="${v}"/>`).join("")}</g>
-      <line x1="15" x2="${W - 15}" y1="${lvl}" y2="${lvl}" stroke="#e7bd45" stroke-dasharray="4 4" stroke-opacity=".6"/>
-      ${bars}
-      <text x="14" y="24" fill="#d9d6d0" font-family="Inter,sans-serif" font-size="13" font-weight="700">${SYMBOLS[i % SYMBOLS.length]}</text>
-      <text x="14" y="40" fill="#7d7973" font-family="Inter,sans-serif" font-size="10.5">${BOTS[i % BOTS.length]} · running</text>
-      <circle cx="${W - 22}" cy="20" r="4" fill="#3ddc84"/></svg>`;
-  }
-
-  async function fillCollage() {
+  function fillCollage() {
     const box = $("#collage"); if (!box) return;
-    const imgs = await findImages(V2.bgDir);
-    const count = 30, tall = new Set([1, 4, 8, 13, 16, 21, 26]);
-    box.innerHTML = Array.from({ length: count }, (_, i) => {
-      const cls = tall.has(i) ? ' class="tall"' : "";
-      return imgs.length ? `<div${cls}><img src="${imgs[i % imgs.length]}" alt="" loading="lazy" decoding="async"></div>` : `<div${cls}>${chartTile(i)}</div>`;
-    }).join("");
+    const imgs = list("/assets/v2/bg/sm/", V2.bgCount);
+    if (!imgs.length) return;
+    const W = box.clientWidth, H = box.clientHeight, phone = W < 700;
+    const cols = phone ? 3 : 7, rows = phone ? 5 : 4;
+    const cw = W / cols, ch = H / rows;
+    let html = "", k = 0;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const w = cw * (0.85 + rnd() * 0.55);                        // wider than the cell, so they overlap
+      const x = c * cw + (rnd() - 0.5) * cw * 0.5 - (w - cw) / 2;
+      const y = r * ch + (rnd() - 0.5) * ch * 0.45 - 20;
+      const h = w * (0.7 + rnd() * 0.55);
+      const rot = (rnd() - 0.5) * 14;
+      const src = imgs[k++ % imgs.length];
+      html += `<img src="${src}" alt="" decoding="async" style="left:${x | 0}px;top:${y | 0}px;width:${w | 0}px;height:${h | 0}px;transform:rotate(${rot.toFixed(1)}deg);z-index:${(rnd() * 10) | 0}" onload="this.classList.add('in')" onerror="this.onerror=null;this.src=this.src.replace('/sm/','/')">`;
+    }
+    box.innerHTML = html;
   }
 
-  async function fillMarquee() {
+  /* ---------- results marquee under the button ---------- */
+  function fillMarquee() {
     const box = $("#marquee"); if (!box) return;
-    const imgs = await findImages(V2.resultsDir);
+    const imgs = list("/assets/v2/results/", V2.resultsCount);
     if (!imgs.length) { box.remove(); return; }
-    const half = Math.ceil(imgs.length / 2);
-    const rows = [imgs.slice(0, half), imgs.slice(half).concat(imgs.slice(0, Math.max(0, half - (imgs.length - half))))];
-    // each row is doubled so the loop is seamless
-    box.innerHTML = rows.map((r, i) => `<div class="marquee__row${i ? " marquee__row--rev" : ""}">${r.concat(r).map(src =>
+    const a = imgs.filter((_, i) => i % 2 === 0), b = imgs.filter((_, i) => i % 2 === 1);
+    box.innerHTML = [a, b].map((r, i) => `<div class="marquee__row${i ? " marquee__row--rev" : ""}">${r.concat(r, r).map(src =>
       `<img src="${src}" alt="" loading="lazy" decoding="async">`).join("")}</div>`).join("");
   }
 
-  async function fillResults() {
-    const wall = $("#v2-results"); if (!wall) return;
-    const imgs = await findImages(V2.resultsDir);
-    wall.innerHTML = imgs.length
-      ? imgs.map(src => `<figure style="margin:0 0 14px"><img src="${src}" alt="Community member result" loading="lazy" decoding="async"></figure>`).join("")
-      : Array.from({ length: 9 }, (_, i) => `<div class="empty">Result ${i + 1}<br>upload to assets/v2/results</div>`).join("");
-  }
-
-  /* ---------- horizontal VSL ---------- */
+  /* ---------- horizontal VSL: the thumbnail loads the player when clicked ---------- */
   function mountVideo() {
     const box = $("#v2-video"); if (!box || !V2.video) return;
-    $("#thumb-soon")?.remove();
     $(".thumb", box).addEventListener("click", () => load(true), { once: true });
   }
   function load(autoplay) {
-    const box = $("#v2-video");
-    const url = V2.video;
+    const box = $("#v2-video"), url = V2.video;
     const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/(\w+))?/);
     const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
     const wistia = url.match(/(?:wistia\.(?:com|net)\/(?:medias|embed\/iframe)\/|wvideo=)(\w{10})/);
@@ -127,5 +93,8 @@ const V2 = {
     if (location.hash === "#join") setTimeout(() => dlg.showModal(), 300);
   }
 
-  fillStats(); mountVideo(); modal(); fillCollage(); fillMarquee(); fillResults();
+  fillStats(); mountVideo(); modal(); fillCollage(); fillMarquee();
+  // redraw the background only when the width changes (phones fire resize when the address bar hides)
+  let t, lastW = innerWidth;
+  addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(t); t = setTimeout(() => { seed = 11; fillCollage(); }, 250); });
 })();
