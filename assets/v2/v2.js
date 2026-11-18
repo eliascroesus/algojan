@@ -9,7 +9,7 @@ const V2 = {
     rating: "",             // average rating, e.g. "4.9" — Jan's real Whop rating (hidden until filled in)
     reviews: "",            // number of reviews, e.g. "162" (hidden until you fill it in)
     reviewsLink: "https://whop.com/algo-world-db94/",   // where people can read the reviews
-    members: "",            // people in the community, e.g. "1,200+" (hidden until filled in)
+    members: "2,200+",      // people in the community
     // Always-true items shown after the ones above. Add a payouts total here only once you can back it up.
     extras: [["9", "AI bots included"], ["$0", "to join, no card"]],
   },
@@ -112,7 +112,7 @@ const V2 = {
     const s = V2.stats, row = $("#proof"); if (!row) return;
     const items = [];
     if (s.rating) items.push(`<span class="stars" aria-hidden="true">★★★★★</span> <b>${s.rating}</b>${s.reviews ? ` from ${s.reviewsLink ? `<a href="${s.reviewsLink}" target="_blank" rel="noopener">${s.reviews} reviews</a>` : `${s.reviews} reviews`}` : " rating"}`);
-    if (s.members) items.push(`<b>${s.members}</b> members`);
+    if (s.members) items.push(`${s.rating ? "" : `<span class="stars" aria-hidden="true">★★★★★</span> `}<b>${s.members}</b> members`);
     (s.extras || []).forEach(([v, t]) => items.push(`<b class="gold-t">${v}</b> ${t}`));
     row.innerHTML = items.map(t => `<li>${t}</li>`).join("");
   }
