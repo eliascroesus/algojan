@@ -3,5 +3,8 @@
   "trailingSlash": false,
   "redirects": [
     { "source": "/", "destination": "/discord", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/bots", "destination": "/v2/discord/index.html" }
   ]
 }

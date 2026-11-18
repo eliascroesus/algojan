@@ -9,6 +9,17 @@ gold buttons, list of bonuses with prices). Plain static HTML, CSS and JS with n
 | `/apply` | Confetti for new opt-ins, Step #1 the **vertical (9:16) VSL**, Step #2 the application one question at a time → booking calendar (or the free Discord for answers that don't qualify) |
 | `/booked` | "Your call is NOT confirmed yet": Step #1 thank-you video (vertical), Step #2 confirm (email / text / add to calendar), Step #3 four vertical FAQ videos |
 
+## Dark version: `/v2/discord` (also at `/bots`)
+
+The same opt-in in a dark design: a dim collage of results behind the headline, a horizontal VSL, a gold
+"Join The Free Discord" button that opens the form in a pop-up, then the price line and the stars / members row. Under it are
+the free bot list, Jean's story and the results wall. After the form it goes on to `/apply` like the light page.
+
+- **Images:** upload them to `assets/v2/bg/` (background collage) and `assets/v2/results/` (results wall), named
+  `1.jpg`, `2.png`, `3.webp`… with no gaps. The page finds them by itself. See `assets/v2/README.md`.
+- **Video, stars, review count, members:** `V2` at the top of `assets/v2/v2.js`. Use real numbers only. The review
+  count stays hidden until you fill it in.
+
 ## Things to fill in: `CONFIG` at the top of `assets/funnel.js`
 
 - `videos.vsl`, `videos.nextSteps`: a Vimeo, YouTube (Shorts work) or `.mp4` link. Empty shows a "Video coming soon" placeholder.
