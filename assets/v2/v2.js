@@ -10,7 +10,8 @@ const V2 = {
     reviews: "",            // number of reviews, e.g. "162" (hidden until you fill it in)
     reviewsLink: "https://whop.com/algo-world-db94/",   // where people can read the reviews
     members: "",            // people in the community, e.g. "1,200+" (hidden until filled in)
-    extra: "9 AI bots",     // third item, e.g. "$250,000+ in member payouts" once you can back it up
+    // Always-true items shown after the ones above. Add a payouts total here only once you can back it up.
+    extras: [["9", "AI bots included"], ["$0", "to join, no card"]],
   },
   // Background collage + results wall: numbered images (1.webp, 2.jpg, 3.png…, no gaps) in these folders.
   // The page finds them by itself. See assets/v2/README.md.
@@ -68,6 +69,17 @@ const V2 = {
     }).join("");
   }
 
+  async function fillMarquee() {
+    const box = $("#marquee"); if (!box) return;
+    const imgs = await findImages(V2.resultsDir);
+    if (!imgs.length) { box.remove(); return; }
+    const half = Math.ceil(imgs.length / 2);
+    const rows = [imgs.slice(0, half), imgs.slice(half).concat(imgs.slice(0, Math.max(0, half - (imgs.length - half))))];
+    // each row is doubled so the loop is seamless
+    box.innerHTML = rows.map((r, i) => `<div class="marquee__row${i ? " marquee__row--rev" : ""}">${r.concat(r).map(src =>
+      `<img src="${src}" alt="" loading="lazy" decoding="async">`).join("")}</div>`).join("");
+  }
+
   async function fillResults() {
     const wall = $("#v2-results"); if (!wall) return;
     const imgs = await findImages(V2.resultsDir);
@@ -79,14 +91,19 @@ const V2 = {
   /* ---------- horizontal VSL ---------- */
   function mountVideo() {
     const box = $("#v2-video"); if (!box || !V2.video) return;
+    $("#thumb-soon")?.remove();
+    $(".thumb", box).addEventListener("click", () => load(true), { once: true });
+  }
+  function load(autoplay) {
+    const box = $("#v2-video");
     const url = V2.video;
     const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)(?:\/(\w+))?/);
     const yt = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]{11})/);
     const wistia = url.match(/(?:wistia\.(?:com|net)\/(?:medias|embed\/iframe)\/|wvideo=)(\w{10})/);
-    if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) { box.innerHTML = `<video controls playsinline preload="metadata" src="${url}"></video>`; return; }
-    const src = vimeo ? `https://player.vimeo.com/video/${vimeo[1]}?${vimeo[2] ? "h=" + vimeo[2] + "&" : ""}title=0&byline=0&portrait=0`
-      : yt ? `https://www.youtube.com/embed/${yt[1]}?rel=0&modestbranding=1`
-      : wistia ? `https://fast.wistia.net/embed/iframe/${wistia[1]}?videoFoam=true` : url;
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) { box.innerHTML = `<video controls playsinline ${autoplay ? "autoplay" : ""} preload="metadata" src="${url}"></video>`; return; }
+    const src = vimeo ? `https://player.vimeo.com/video/${vimeo[1]}?${vimeo[2] ? "h=" + vimeo[2] + "&" : ""}title=0&byline=0&portrait=0${autoplay ? "&autoplay=1" : ""}`
+      : yt ? `https://www.youtube.com/embed/${yt[1]}?rel=0&modestbranding=1${autoplay ? "&autoplay=1" : ""}`
+      : wistia ? `https://fast.wistia.net/embed/iframe/${wistia[1]}?videoFoam=true${autoplay ? "&autoPlay=true" : ""}` : url;
     box.innerHTML = `<iframe src="${src}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Video"></iframe>`;
   }
 
@@ -96,7 +113,7 @@ const V2 = {
     const items = [];
     if (s.rating) items.push(`<span class="stars" aria-hidden="true">★★★★★</span> <b>${s.rating}</b>${s.reviews ? ` from ${s.reviewsLink ? `<a href="${s.reviewsLink}" target="_blank" rel="noopener">${s.reviews} reviews</a>` : `${s.reviews} reviews`}` : " rating"}`);
     if (s.members) items.push(`<b>${s.members}</b> members`);
-    if (s.extra) items.push(`<b class="gold-t">${s.extra}</b> included free`);
+    (s.extras || []).forEach(([v, t]) => items.push(`<b class="gold-t">${v}</b> ${t}`));
     row.innerHTML = items.map(t => `<li>${t}</li>`).join("");
   }
 
@@ -110,5 +127,5 @@ const V2 = {
     if (location.hash === "#join") setTimeout(() => dlg.showModal(), 300);
   }
 
-  fillStats(); mountVideo(); modal(); fillCollage(); fillResults();
+  fillStats(); mountVideo(); modal(); fillCollage(); fillMarquee(); fillResults();
 })();
