@@ -49,7 +49,7 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 }
 .hero h1 { font-size: clamp(32px, 3.6vw, 54px); max-width: 1000px; margin: 0 auto; text-shadow: 0 2px 30px rgba(0,0,0,.8); }
 .hero h1 .line { display: block; }
-.sub { max-width: 640px; margin: 22px auto 0; color: var(--ink-2); font-size: clamp(16px, 1.45vw, 19px); line-height: 1.6; text-wrap: balance; }
+.sub { max-width: 770px; margin: 22px auto 0; color: var(--ink-2); font-size: clamp(16px, 1.45vw, 19px); line-height: 1.6; text-wrap: balance; }
 
 /* ---------- video + thumbnail ---------- */
 .video {
@@ -76,8 +76,8 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
   position: relative; isolation: isolate; overflow: visible;
   appearance: none; border: 1px solid rgba(255,236,170,.9); cursor: pointer; text-decoration: none; font: inherit;
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  background: var(--gold); color: #1c1302; font-weight: 800; font-size: 18px; letter-spacing: -0.01em;
-  padding: 16px 40px; min-height: 56px; border-radius: 999px;
+  background: var(--gold); color: #1c1302; font-weight: 700; font-size: 16px; letter-spacing: -0.01em;
+  padding: 12px 30px; min-height: 48px; border-radius: 999px;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.7), inset 0 -3px 0 rgba(150,90,0,.35),
               0 10px 30px -4px rgba(245,170,30,.55), 0 0 70px -10px rgba(245,194,66,.55);
   transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
@@ -94,7 +94,7 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 @keyframes shine { 0%, 55% { background-position: -150% 0; } 85%, 100% { background-position: 150% 0; } }
 .btn[disabled] { opacity: .7; cursor: wait; }
 .btn--block { width: 100%; }
-.btn--lg { font-size: 18px; padding: 17px 46px; min-height: 58px; }
+.btn--lg { font-size: 16px; padding: 11px 30px; min-height: 48px; }
 
 .cta { margin-top: 34px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
 .price-line { font-size: 14.5px; color: var(--muted); margin: 8px 0 0; }
@@ -111,7 +111,6 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .marquee { margin-top: 54px; padding-bottom: 20px; display: grid; gap: 12px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
 .marquee__row { display: flex; gap: 12px; width: max-content; animation: scroll 55s linear infinite; }
 .marquee__row--rev { animation-direction: reverse; animation-duration: 65s; }
-.marquee:hover .marquee__row { animation-play-state: paused; }
 .marquee__row img { height: 124px; width: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #0d0d0d; }
 @keyframes scroll { to { transform: translateX(-50%); } }
 
