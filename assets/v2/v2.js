@@ -11,7 +11,7 @@ const V2 = {
     reviewsLink: "https://whop.com/algo-world-db94/",   // where people can read the reviews
     members: "2,200+",      // people in the community
     // Always-true items shown after the ones above. Add a payouts total here only once you can back it up.
-    extras: [["9", "AI bots included"], ["$0", "to join, no card"]],
+    extras: [["9", "MT5 bots included"], ["FREE", "to join, no card"]],
   },
   // How many numbered images are in each folder (1.webp … N.webp). Bump the number after uploading more.
   // bg/sm/ holds small copies for the background (faster); if one is missing the full image is used.
