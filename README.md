@@ -18,11 +18,15 @@ the free bot list, Jan's story and the results wall. After the form it goes on t
 - **Images:** upload them to `assets/v2/bg/` (background collage) and `assets/v2/results/` (results wall), named
   `1.jpg`, `2.png`, `3.webp`… with no gaps. The page finds them by itself. See `assets/v2/README.md`.
 - **Join link:** `discordUrl` in `assets/funnel.js` points to Jan's Whop (https://whop.com/algo-world-db94/).
+- **Offer:** $147/month (compared to $297, 50% off) for all 9 bots. After the form, people go to Jan's Whop to pay:
+  `data-next` on `<body>` in `v2/discord/index.html` (swap in a direct checkout link when there is one).
 - **VSL:** two Vimeo videos in `V2.video` in `assets/v2/v2.js`. Phones (up to 767px wide) get the 9:16 one and
-  tablets/desktops the 16:9 one. Like Jean's funnel, Vimeo's title, name, avatar, logo, captions and controls are off
-  (our own controls instead), and the video stops just before the end and goes back to the thumbnail with "Watch again",
-  so Vimeo's "More from…" end screen never shows. The thumbnail stays until the video is actually playing.
-  `assets/vimeo-player.min.js` is Vimeo's player library (MIT), kept in the repo.
+  tablets/desktops the 16:9 one. On load the video plays silently as a preview under a play button ("Plays at 1.2x
+  speed"); the designed thumbnail only shows until that preview is actually playing. A click restarts it from 0:00
+  with sound at 1.2x (`SPEED`). Like Jean's funnel, Vimeo's title, name, avatar, logo, captions and controls are off
+  (our own controls instead), and the video stops just before the end and goes back to the thumbnail with
+  "Watch again", so Vimeo's "More from…" end screen never shows. `assets/vimeo-player.min.js` is Vimeo's player
+  library (MIT), kept in the repo.
 - **Video, stars, review count, members:** `V2` at the top of `assets/v2/v2.js`. Use real numbers only. The review
   count stays hidden until you fill it in.
 

@@ -213,7 +213,9 @@ if (PAGE === "discord") {
     lead = { name, email, phone: dial + phone, country: cc.value };
     store.set("lead", lead);
     const btn = $("button[type=submit]", form); btn.disabled = true; btn.firstChild.textContent = "Sending your invite… ";
-    send("optin", lead).finally(() => go(CONFIG.pages.apply, "joined=1"));
+    // A page can send people somewhere else after the form (e.g. /v2/discord → checkout): <body data-next="…">.
+    const next = document.body.dataset.next;
+    send("optin", lead).finally(() => next ? (location.href = next) : go(CONFIG.pages.apply, "joined=1"));
   });
 
   joinedPopup();
