@@ -90,7 +90,6 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .vp__play { width: 96px; height: 62px; border-radius: 8px; background: var(--blue); display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.5); transition: transform .15s; }
 .vp__play svg { width: 30px; height: 30px; margin-left: 3px; }
 .vp__cover:hover .vp__play { transform: scale(1.06); }
-.vp__label { font-weight: 800; font-size: 17px; letter-spacing: .02em; text-shadow: 0 2px 12px rgba(0,0,0,.8); }
 .vp__speed { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; background: rgba(0,0,0,.6); border: 1px solid rgba(255,255,255,.18); font-size: 12.5px; font-weight: 700; color: var(--gold-t); }
 .vp__speed svg { width: 13px; height: 13px; }
 /* while watching: our own controls */
@@ -108,7 +107,9 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .vp__track { flex: 1; padding: 14px 6px; cursor: pointer; }
 .vp__rail { display: block; height: 5px; border-radius: 999px; background: rgba(255,255,255,.28); overflow: hidden; }
 .vp__fill { display: block; height: 100%; width: 0; background: var(--gold-t); }
-.vp__rate { font-size: 12px; font-weight: 800; color: var(--gold-t); padding: 0 4px; }
+.vp__rate { flex: none; min-width: 46px; height: 28px; padding: 0 8px; border-radius: 999px; border: 1px solid rgba(245,194,66,.55); background: rgba(245,194,66,.12); color: var(--gold-t); font: inherit; font-size: 12.5px; font-weight: 800; cursor: pointer; }
+.vp__rate:hover { background: rgba(245,194,66,.22); }
+.vp__rate.is-normal { border-color: rgba(255,255,255,.3); background: rgba(255,255,255,.08); color: #fff; }
 .video:fullscreen { border-radius: 0; border: 0; max-width: none; }
 
 /* phones: the 9:16 video, with the thumbnail laid out for a tall frame */
@@ -124,7 +125,7 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
   .thumb__play svg { width: 26px; height: 26px; }
   .thumb__replay { top: calc(50% + 42px); }
   .vp__play { width: 84px; height: 56px; }
-  .vp__label { font-size: 16px; }
+
 }
 
 /* ---------- the button: bright gold, glowing, alive ---------- */

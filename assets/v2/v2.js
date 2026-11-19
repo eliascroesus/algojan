@@ -68,7 +68,7 @@ const V2 = {
      If the browser won't autoplay even a muted video (e.g. iPhone low-power mode), the thumbnail simply stays until
      the click. Same clean-embed approach as Jean's funnel. */
   const PHONE = matchMedia("(max-width: 767px)");
-  const SPEED = 1.2;
+  const SPEED = 1.2;   // starting speed; the 1x / 1.2x button in the controls switches it
   const VIMEO_CLEAN = { title: 0, byline: 0, portrait: 0, badge: 0, vimeo_logo: 0, pip: 0, playsinline: 1, dnt: 1,
     autopause: 0, texttrack: "false", transparent: 0, speed: 1 };
   const ICON = {
@@ -97,19 +97,18 @@ const V2 = {
     box.insertAdjacentHTML("beforeend", `
       <button class="vp__cover" type="button" aria-label="Play the video with sound">
         <span class="vp__play">${ICON.play}</span>
-        <span class="vp__label">Click To Watch</span>
         <span class="vp__speed">${ICON.fast}Plays at ${SPEED}x speed</span>
       </button>
       <button class="vp__hit" type="button" aria-label="Play or pause"></button>
       <div class="vp__bar">
         <button class="vp__btn vp__toggle" type="button" aria-label="Play or pause">${ICON.play}${ICON.pause}</button>
         <div class="vp__track" role="slider" aria-label="Seek" tabindex="0"><span class="vp__rail"><span class="vp__fill"></span></span></div>
-        <span class="vp__rate">${SPEED}x</span>
+        <button class="vp__rate" type="button" aria-label="Playback speed">${SPEED}x</button>
         <button class="vp__btn vp__mute" type="button" aria-label="Sound on or off">${ICON.sound}${ICON.muted}</button>
         <button class="vp__btn vp__full" type="button" aria-label="Full screen">${ICON.full}</button>
       </div>`);
     const fill = $(".vp__fill", box), track = $(".vp__track", box);
-    let mode = "preview", paused = true, duration = 0, uiTimer;   // mode: preview → watching → ended
+    let mode = "preview", paused = true, duration = 0, uiTimer, rate = SPEED;   // mode: preview → watching → ended
     const set = m => { mode = m; box.dataset.mode = m; };
     set("preview");
     const showUi = () => { box.classList.add("show-ui"); clearTimeout(uiTimer); uiTimer = setTimeout(() => box.classList.remove("show-ui"), 2500); };
@@ -137,7 +136,7 @@ const V2 = {
     const watch = () => {
       set("watching"); box.classList.add("is-ready", "is-playing");
       fill.style.width = "0%";
-      player.setPlaybackRate(SPEED).catch(() => {});
+      player.setPlaybackRate(rate).catch(() => {});
       player.setCurrentTime(0).catch(() => {});
       player.setMuted(false).catch(() => {});
       player.setVolume(1).catch(() => {});
@@ -160,6 +159,12 @@ const V2 = {
     $(".vp__hit", box).addEventListener("click", () => { toggle(); showUi(); });
     box.addEventListener("pointermove", e => { if (e.pointerType === "mouse" && mode === "watching") showUi(); });
     $(".vp__toggle", box).addEventListener("click", () => { toggle(); showUi(); });
+    const rateBtn = $(".vp__rate", box);
+    rateBtn.addEventListener("click", () => {
+      rate = rate === 1 ? SPEED : 1;
+      rateBtn.textContent = rate + "x"; rateBtn.classList.toggle("is-normal", rate === 1);
+      player.setPlaybackRate(rate).catch(() => {}); showUi();
+    });
     $(".vp__mute", box).addEventListener("click", () => {
       const m = !box.classList.contains("is-muted");
       box.classList.toggle("is-muted", m); player.setMuted(m).catch(() => {}); if (!m) player.setVolume(1).catch(() => {}); showUi();
