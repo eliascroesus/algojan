@@ -60,9 +60,9 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .thumb { position: absolute; inset: 0; overflow: hidden; cursor: pointer; }
 .thumb__bg { position: absolute; inset: 0; background: center 30% / cover no-repeat; filter: brightness(.38) saturate(.8); }
 .thumb::after { content: ""; position: absolute; inset: 0; background: radial-gradient(ellipse 60% 70% at 50% 45%, transparent 30%, rgba(0,0,0,.6) 100%); }
-.thumb__card { position: absolute; z-index: 1; border-radius: 8px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.25); }
-.thumb__card--l { left: 5%; top: 36%; width: 24%; transform: perspective(700px) rotateY(16deg) rotate(-4deg); }
-.thumb__card--r { right: 5%; top: 33%; width: 20%; transform: perspective(700px) rotateY(-16deg) rotate(3deg); }
+.thumb__card { position: absolute; z-index: 1; height: auto; border-radius: 8px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.25); }
+.thumb__card--l { left: 4%; top: 40%; width: 31%; transform: perspective(700px) rotateY(16deg) rotate(-4deg); }
+.thumb__card--r { right: 4%; top: 36%; width: 25%; transform: perspective(700px) rotateY(-16deg) rotate(3deg); }
 .thumb__title { position: absolute; z-index: 2; left: 0; right: 0; top: 18%; text-align: center; }
 .thumb__title b { display: block; font-family: "Anton", Impact, sans-serif; font-weight: 400; transform: skewX(-8deg); font-size: clamp(30px, 6.6vw, 64px); line-height: 1; color: #fff; text-transform: uppercase; text-shadow: 0 4px 24px rgba(0,0,0,.8); }
 .thumb__title span { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 6px; font-style: italic; font-weight: 800; font-size: clamp(11px, 1.6vw, 15px); letter-spacing: .42em; text-transform: uppercase; color: #fff; }
@@ -70,6 +70,53 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .thumb__play { position: absolute; z-index: 3; left: 50%; top: 63%; transform: translate(-50%, -50%); width: 96px; height: 62px; border-radius: 6px; background: var(--blue); display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.5); transition: transform .15s; }
 .thumb:hover .thumb__play { transform: translate(-50%, -50%) scale(1.06); }
 .thumb__play svg { width: 30px; height: 30px; color: #fff; margin-left: 3px; }
+
+/* thumbnail states: loading spinner, fade out once playing, back with "Watch again" at the end */
+.thumb { z-index: 2; transition: opacity .45s ease, visibility .45s; }
+.thumb:focus-visible { outline: 3px solid var(--gold-t); outline-offset: -3px; }
+.video.is-playing .thumb { opacity: 0; visibility: hidden; pointer-events: none; }
+.video.is-ended .thumb { opacity: 1; visibility: visible; pointer-events: auto; }
+.thumb__spin { display: none; position: absolute; inset: 14px 30px; border-radius: 50%; }
+.video.is-loading .thumb__play svg { display: none; }
+.video.is-loading .thumb__spin { display: block; inset: auto; width: 26px; height: 26px; border: 3px solid rgba(255,255,255,.35); border-top-color: #fff; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.thumb__replay { display: none; position: absolute; z-index: 3; left: 50%; top: calc(63% + 50px); transform: translateX(-50%); font-size: 13px; font-weight: 700; color: #fff; text-shadow: 0 1px 8px #000; }
+.video.is-ended .thumb__replay { display: block; }
+
+/* our own player controls over the Vimeo iframe */
+.video iframe { z-index: 0; }
+.vp__hit { position: absolute; inset: 0 0 52px; z-index: 1; border: 0; background: transparent; cursor: pointer; }
+.vp__bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; display: flex; align-items: center; gap: 4px; padding: 26px 10px 8px; background: linear-gradient(transparent, rgba(0,0,0,.75)); opacity: 0; transition: opacity .25s; pointer-events: none; }
+.video.is-paused .vp__bar, .video.show-ui .vp__bar { opacity: 1; pointer-events: auto; }
+.video:not(.is-playing) .vp__bar, .video.is-ended .vp__bar { opacity: 0; pointer-events: none; }
+.vp__btn { flex: none; width: 38px; height: 38px; border: 0; border-radius: 8px; background: transparent; color: #fff; cursor: pointer; display: grid; place-items: center; }
+.vp__btn:hover { background: rgba(255,255,255,.14); }
+.vp__btn svg { width: 20px; height: 20px; }
+.vp__toggle svg:last-child, .video.is-paused .vp__toggle svg:first-child { display: block; }
+.vp__toggle svg:first-child, .video.is-paused .vp__toggle svg:last-child { display: none; }
+.vp__mute svg:last-child, .video.is-muted .vp__mute svg:first-child { display: none; }
+.video.is-muted .vp__mute svg:last-child { display: block; }
+.vp__track { flex: 1; padding: 14px 6px; cursor: pointer; }
+.vp__rail { display: block; height: 5px; border-radius: 999px; background: rgba(255,255,255,.28); overflow: hidden; }
+.vp__fill { display: block; height: 100%; width: 0; background: var(--gold-t); }
+.vp__unmute { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 22px; border: 0; border-radius: 16px; background: var(--gold); color: #1c1302; font: inherit; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 16px 40px rgba(0,0,0,.6); }
+.vp__unmute[hidden] { display: none; }
+.vp__unmute svg { width: 30px; height: 30px; }
+.video:fullscreen { border-radius: 0; border: 0; max-width: none; }
+
+/* phones: the 9:16 video, with the thumbnail laid out for a tall frame */
+@media (max-width: 767px) {
+  .video { aspect-ratio: 9 / 16; max-width: 360px; margin-left: auto; margin-right: auto; }
+  .thumb__bg { background-position: center; }
+  .thumb__title { top: 8%; padding: 0 12px; }
+  .thumb__title b { font-size: clamp(40px, 13vw, 54px); line-height: .95; }
+  .thumb__title span { font-size: 13px; letter-spacing: .36em; }
+  .thumb__card--l { left: 5%; top: auto; bottom: 7%; width: 44%; transform: rotate(-7deg); }
+  .thumb__card--r { right: 5%; top: auto; bottom: 10%; width: 38%; transform: rotate(6deg); }
+  .thumb__play { top: 50%; width: 84px; height: 56px; }
+  .thumb__play svg { width: 26px; height: 26px; }
+  .thumb__replay { top: calc(50% + 42px); }
+}
 
 /* ---------- the button: bright gold, glowing, alive ---------- */
 .btn {
@@ -216,8 +263,6 @@ footer a { color: inherit; }
   .hero h1 .line { display: inline; }
   .sub { font-size: 16px; }
   .video { margin-top: 28px; border-radius: 10px; }
-  .thumb__play { width: 68px; height: 44px; }
-  .thumb__play svg { width: 22px; height: 22px; }
   .cta .btn, .btn--lg { width: 100%; padding-left: 20px; padding-right: 20px; font-size: 18px; }
   .proof { font-size: 12.5px; }
   .proof li + li::before { margin: 0 8px; }

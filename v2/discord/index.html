@@ -12,6 +12,7 @@
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/anton-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/coach/jan-desk.webp" as="image" fetchpriority="high">
+<link rel="dns-prefetch" href="https://player.vimeo.com">
 <link rel="stylesheet" href="/assets/v2/v2.css">
 </head>
 <body data-page="discord">
@@ -23,12 +24,13 @@
     <p class="sub">Get my <b>9 MT5 trading bots free</b>. Built to hit the profit target <b>without ever breaking your drawdown</b>. No emotions. No revenge trades. No tilt.</p>
 
     <div class="video" id="v2-video">
-      <div class="thumb" role="img" aria-label="Video: how the bots pass challenges, in 3 minutes">
+      <div class="thumb" role="button" tabindex="0" aria-label="Play the video: pass the challenge in 3 minutes">
         <div class="thumb__bg" style="background-image:url('/assets/coach/jan-desk.webp')"></div>
         <img class="thumb__card thumb__card--l" src="/assets/v2/certs/funded.webp" alt="" width="1000" height="750" fetchpriority="high">
         <img class="thumb__card thumb__card--r" src="/assets/v2/certs/ftmo-challenge.webp" alt="" width="1000" height="1000" fetchpriority="high">
         <div class="thumb__title"><b>Pass The Challenge</b><span>In 3 Minutes</span></div>
-        <span class="thumb__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg></span>
+        <span class="thumb__play"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 4l14 8-14 8z"/></svg><i class="thumb__spin" aria-hidden="true"></i></span>
+        <span class="thumb__replay">Watch again</span>
       </div>
     </div>
 
@@ -132,6 +134,7 @@
 
 <div class="sticky-cta" id="sticky-cta" data-hide=".cta, .total, .about .btn"><a class="btn" href="#join" data-join>Get The Free Bots <span>→</span></a></div>
 
+<script defer src="/assets/vimeo-player.min.js"></script>
 <script defer src="/assets/funnel.js"></script>
 <script defer src="/assets/v2/v2.js"></script>
 </body>
