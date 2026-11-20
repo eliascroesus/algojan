@@ -214,6 +214,21 @@ h2 { font-size: clamp(32px, 4.4vw, 54px); }
 .ticks svg { width: 24px; height: 24px; flex: none; padding: 4px; border-radius: 50%; background: rgba(61,220,132,.14); color: var(--green); }
 .about .btn { margin-top: 30px; }
 
+/* verified track record (Myfxbook), bottom of "Who's Jan" */
+.verified { margin-top: 64px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; text-align: left;
+  padding: 34px 38px; border-radius: 22px; border: 1px solid rgba(61,220,132,.3);
+  background: radial-gradient(120% 120% at 0% 0%, rgba(61,220,132,.08), transparent 55%), linear-gradient(180deg, #0e0e0e, #070707); }
+.verified .tag { border-color: rgba(61,220,132,.4); background: rgba(61,220,132,.08); color: var(--green); margin-bottom: 14px; }
+.verified h3 { font-size: clamp(24px, 2.6vw, 32px); letter-spacing: -0.035em; }
+.verified p { color: var(--ink-2); font-size: 17px; margin: 12px 0 0; max-width: 560px; }
+.verified__link { display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; color: var(--green); font-weight: 700; text-decoration: none; }
+.verified__link:hover { text-decoration: underline; }
+.verified__link span { transition: transform .15s; }
+.verified__link:hover span { transform: translateX(3px); }
+.verified__widget { display: block; border-radius: 12px; overflow: hidden; background: #fff; padding: 10px; box-shadow: 0 20px 50px -18px rgba(0,0,0,.9); transition: transform .15s; }
+.verified__widget:hover { transform: translateY(-2px); }
+.verified__widget img { display: block; max-width: 100%; height: auto; }
+
 .fine { text-align: center; color: var(--muted); font-size: 12.5px; max-width: 700px; margin: 24px auto 0; }
 
 /* ---------- join modal (the opt-in form) ---------- */
@@ -287,6 +302,8 @@ footer a { color: inherit; }
   .total { padding: 20px; }
   .total .btn { width: 100%; }
   .about .btn { width: 100%; }
+  .verified { grid-template-columns: 1fr; gap: 24px; padding: 24px 20px; margin-top: 48px; }
+  .verified__widget { justify-self: center; }
   .about p { font-size: 17px; }
   .sticky-cta { display: block; }
   .joined { left: 50%; bottom: auto; top: 12px; transform: translate(-50%, -16px); }
