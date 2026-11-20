@@ -18,7 +18,7 @@ the free bot list, Jan's story and the results wall. After the form it goes on t
 - **Images:** upload them to `assets/v2/bg/` (background collage) and `assets/v2/results/` (results wall), named
   `1.jpg`, `2.png`, `3.webp`… with no gaps. The page finds them by itself. See `assets/v2/README.md`.
 - **Join link:** `discordUrl` in `assets/funnel.js` points to Jan's Whop (https://whop.com/algo-world-db94/).
-- **Offer:** $147/month (compared to $297, 50% off) for all 9 bots. After the form, people go to Jan's Whop to pay:
+- **Offer:** $147/month (compared to $297, 50% off) for the full bot bundle. After the form, people go to Jan's Whop to pay:
   `data-next` on `<body>` in `v2/discord/index.html` (swap in a direct checkout link when there is one).
 - **VSL:** two Vimeo videos in `V2.video` in `assets/v2/v2.js`. Phones (up to 767px wide) get the 9:16 one and
   tablets/desktops the 16:9 one. On load the video plays silently as a preview under a play button ("Plays at 1.2x

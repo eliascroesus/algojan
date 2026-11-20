@@ -295,3 +295,4 @@ footer a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; animation: none !important; }
 }
+.nowrap { white-space: nowrap; }
