@@ -9,7 +9,23 @@ gold buttons, list of bonuses with prices). Plain static HTML, CSS and JS with n
 | `/apply` | Confetti for new opt-ins, Step #1 the **vertical (9:16) VSL**, Step #2 the application one question at a time → booking calendar (or the free Discord for answers that don't qualify) |
 | `/booked` | "Your call is NOT confirmed yet": Step #1 thank-you video (vertical), Step #2 confirm (email / text / add to calendar), Step #3 four vertical FAQ videos |
 
-## Dark version: `/v2/discord` (also at `/bots`)
+## Main page: `/ai-trading`
+
+The dark page is the main page now. `/`, `/bots` and `/v2/discord` all redirect to `/ai-trading` (see `vercel.json`).
+Every "Get Access Now" button goes straight to Jan's Whop product page
+(https://whop.com/algo-world-db94/products/bots-community/). There's no form on this page.
+
+### Admin: `/admin`
+
+Shows visits to `/ai-trading` and "Get Access Now" clicks (today, last 7 days, all time, and a 30-day table).
+The password is `Uncapped123`. To change it, set `ADMIN_PASSWORD` in Vercel.
+
+**Connect the database once:** Vercel → the project → Storage → Create → Upstash for Redis (free plan), then
+connect it to this project and redeploy. Until then the page works but nothing is counted, and /admin says so.
+To stop counting your own visits, open `/ai-trading?rt=off` once on that device.
+Optional: `TRACK_TIMEZONE` (default `America/New_York`) sets which day a visit counts for.
+
+## Dark page details (was `/v2/discord`)
 
 The same opt-in in a dark design: a dim collage of results behind the headline, a horizontal VSL, a gold
 "Join The Free Discord" button that opens the form in a pop-up, then the price line and the stars / members row. Under it are

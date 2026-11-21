@@ -2,9 +2,8 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/", "destination": "/discord", "permanent": false }
-  ],
-  "rewrites": [
-    { "source": "/bots", "destination": "/v2/discord/index.html" }
+    { "source": "/", "destination": "/ai-trading", "permanent": false },
+    { "source": "/bots", "destination": "/ai-trading", "permanent": false },
+    { "source": "/v2/discord", "destination": "/ai-trading", "permanent": false }
   ]
 }

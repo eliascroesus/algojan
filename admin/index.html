@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin | AlgoJan</title>
+<style>
+  @font-face { font-family: "Inter"; font-weight: 100 900; src: url("/assets/fonts/inter-latin.woff2") format("woff2"); }
+  :root { --bg: #000; --card: #0e0e0e; --line: #1f1f1f; --ink: #fff; --muted: #8a8a8a; --gold: #f5c242; --green: #3ddc84; }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Inter", system-ui, sans-serif; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 48px 16px; }
+  h1 { font-size: 24px; margin: 0 0 24px; letter-spacing: -0.02em; }
+  form { display: flex; gap: 10px; }
+  input, button { font: inherit; font-size: 16px; border-radius: 10px; padding: 12px 14px; }
+  input { flex: 1; background: var(--card); border: 1px solid var(--line); color: var(--ink); }
+  button { border: 0; background: var(--gold); color: #1c1302; font-weight: 700; cursor: pointer; }
+  .err { color: #ff6b6b; margin: 12px 0 0; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0 28px; }
+  .kpi { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .kpi span { display: block; color: var(--muted); font-size: 13px; }
+  .kpi b { display: block; font-size: 32px; margin-top: 6px; font-variant-numeric: tabular-nums; }
+  .kpi small { color: var(--muted); font-size: 13px; }
+  .bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; color: var(--muted); font-size: 14px; }
+  .bar button { background: transparent; border: 1px solid var(--line); color: var(--ink); padding: 6px 12px; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 600; }
+  .note { color: var(--muted); font-size: 13px; margin-top: 20px; line-height: 1.5; }
+  @media (max-width: 560px) { .kpis { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AlgoJan · /ai-trading</h1>
+  <form id="login"><input type="password" id="pw" placeholder="Password" autocomplete="current-password" required><button>Log in</button></form>
+  <p class="err" id="err" hidden></p>
+  <div id="dash" hidden>
+    <div class="bar"><span>Today, last 7 days and all time</span><button id="logout" type="button">Log out</button></div>
+    <div class="kpis" id="kpis"></div>
+    <table><thead><tr><th>Day</th><th>Visits</th><th>Get Access clicks</th><th>Click rate</th></tr></thead><tbody id="rows"></tbody></table>
+    <p class="note">Visits = page loads of /ai-trading (bots and link previews not counted). Clicks = taps on any "Get Access Now" button.
+      To stop counting your own visits, open the page once with <code>?rt=off</code> on that device.</p>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const rate = (c, v) => v ? (c / v * 100).toFixed(1) + "%" : "–";
+async function load(pw) {
+  const r = await fetch("/api/stats", { headers: { "x-admin-password": pw } });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || "Error " + r.status);
+  return d;
+}
+function show(d) {
+  const sum = n => d.days.slice(0, n).reduce((a, x) => ({ visit: a.visit + x.visit, click: a.click + x.click }), { visit: 0, click: 0 });
+  const blocks = [["Today", sum(1)], ["Last 7 days", sum(7)], ["All time", d.total]];
+  $("kpis").innerHTML = blocks.map(([t, s]) => `<div class="kpi"><span>${t}</span><b>${s.visit.toLocaleString()}</b><small>visits · ${s.click.toLocaleString()} clicks · ${rate(s.click, s.visit)}</small></div>`).join("");
+  $("rows").innerHTML = d.days.map(x => `<tr><td>${x.day}</td><td>${x.visit}</td><td>${x.click}</td><td>${rate(x.click, x.visit)}</td></tr>`).join("");
+  $("login").hidden = true; $("dash").hidden = false; $("err").hidden = true;
+}
+async function go(pw) {
+  try { show(await load(pw)); sessionStorage.setItem("aj_pw", pw); }
+  catch (e) { sessionStorage.removeItem("aj_pw"); $("err").textContent = e.message; $("err").hidden = false; $("login").hidden = false; $("dash").hidden = true; }
+}
+$("login").addEventListener("submit", e => { e.preventDefault(); go($("pw").value); });
+$("logout").addEventListener("click", () => { sessionStorage.removeItem("aj_pw"); location.reload(); });
+const saved = sessionStorage.getItem("aj_pw"); if (saved) go(saved);
+</script>
+</body>
+</html>

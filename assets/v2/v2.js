@@ -190,16 +190,17 @@ const V2 = {
   }
 
   /* ---------- join modal ---------- */
-  function modal() {
-    const dlg = $("#join"); if (!dlg) return;
-    const open = e => { e.preventDefault(); if (!dlg.open) dlg.showModal(); setTimeout(() => $("input[name=name]", dlg).focus(), 50); };
-    document.querySelectorAll("[data-join]").forEach(a => a.addEventListener("click", open));
-    $(".join__close", dlg).addEventListener("click", () => dlg.close());
-    dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
-    if (location.hash === "#join") setTimeout(() => dlg.showModal(), 300);
+  /* ---------- tracking for /admin: a visit per page load, a click per "Get Access Now" ---------- */
+  const track = ev => { try { const b = JSON.stringify({ e: ev }); if (!(navigator.sendBeacon && navigator.sendBeacon("/api/track", new Blob([b], { type: "text/plain" })))) fetch("/api/track", { method: "POST", body: b, keepalive: true }).catch(() => {}); } catch {} };
+  function ctas() {
+    if (/[?&]rt=off\b/.test(location.search)) { try { localStorage.setItem("algojan_notrack", "1"); } catch {} }
+    let off = false; try { off = localStorage.getItem("algojan_notrack") === "1"; } catch {}
+    if (off) return;
+    track("visit");
+    document.querySelectorAll("[data-cta]").forEach(a => a.addEventListener("click", () => track("click")));
   }
 
-  fillStats(); mountVideo(); modal(); fillCollage(); fillMarquee();
+  fillStats(); mountVideo(); ctas(); if (typeof joinedPopup === "function") joinedPopup(); fillCollage(); fillMarquee();
   // redraw the background only when the width changes (phones fire resize when the address bar hides)
   let t, lastW = innerWidth;
   addEventListener("resize", () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(t); t = setTimeout(() => { seed = 11; fillCollage(); }, 250); });
