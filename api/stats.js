@@ -9,5 +9,5 @@ module.exports = async (req, res) => {
     const out = await pipeline([["HGETALL", PREFIX + "total"], ...days.map(d => ["HGETALL", PREFIX + "d:" + d])]);
     const h = flat => { const o = { visit: 0, click: 0 }; for (let i = 0; flat && i < flat.length; i += 2) o[flat[i]] = +flat[i + 1]; return o; };
     res.json({ total: h(out[0]), days: days.map((d, i) => ({ day: d, ...h(out[i + 1]) })) });
-  } catch (err) { res.status(err.code === "no_db" ? 503 : 500).json({ error: err.code === "no_db" ? "No database connected yet (see README)" : err.message }); }
+  } catch (err) { res.status(err.code === "no_db" ? 503 : 500).json({ error: err.message }); }
 };
