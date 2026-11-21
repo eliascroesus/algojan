@@ -36,7 +36,7 @@
 <body>
 <div class="wrap">
   <h1>AlgoJan · /ai-trading</h1>
-  <form id="login"><input type="password" id="pw" placeholder="Password" autocomplete="current-password" required><button>Log in</button></form>
+  <form id="login"><input type="password" id="pw" placeholder="Password" autocomplete="off" required><button>Log in</button></form>
   <p class="err" id="err" hidden></p>
   <div id="dash" hidden>
     <div class="bar"><span>Today, last 7 days and all time</span><button id="logout" type="button">Log out</button></div>
@@ -47,34 +47,43 @@
   </div>
 </div>
 <script>
-const $ = id => document.getElementById(id);
-const rate = (c, v) => v ? (c / v * 100).toFixed(1) + "%" : "–";
-// Simple on purpose: the password is checked right here, the numbers come from the free Abacus counters
+// Simple on purpose: the password is checked right here; the numbers come from the free Abacus counters
 // that /ai-trading counts up (no database to set up).
 const PASSWORD = "Uncapped123";
 const COUNTER = "https://abacus.jasoncameron.dev/get/algojan-ai-trading/";
-const get = k => fetch(COUNTER + k).then(r => r.ok ? r.json() : { value: 0 }).then(d => +d.value || 0).catch(() => 0);
+const $ = id => document.getElementById(id);
+const rate = (c, v) => v ? (c / v * 100).toFixed(1) + "%" : "–";
 const dayStr = d => d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
-async function load(pw) {
-  if (pw !== PASSWORD) throw new Error("Wrong password");
-  const days = Array.from({ length: 30 }, (_, i) => dayStr(new Date(Date.now() - i * 864e5)));
-  const [tv, tc, ...rest] = await Promise.all([get("visit"), get("click"), ...days.flatMap(d => [get("visit-" + d), get("click-" + d)])]);
-  return { total: { visit: tv, click: tc }, days: days.map((d, i) => ({ day: d, visit: rest[i * 2], click: rest[i * 2 + 1] })) };
+const get = k => {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+  return fetch(COUNTER + k, { signal: ctl.signal, cache: "no-store" }).then(r => r.ok ? r.json() : { value: 0 })
+    .then(d => +d.value || 0).catch(() => null).finally(() => clearTimeout(t));
+};
+function render(total, days) {
+  const n = v => v == null ? "…" : v.toLocaleString();
+  const sum = c => days.slice(0, c).reduce((a, x) => ({ visit: a.visit + (x.visit || 0), click: a.click + (x.click || 0) }), { visit: 0, click: 0 });
+  const blocks = [["Today", sum(1)], ["Last 7 days", sum(7)], ["All time", total]];
+  $("kpis").innerHTML = blocks.map(([t, s]) => `<div class="kpi"><span>${t}</span><b>${n(s.visit)}</b><small>visits · ${n(s.click)} clicks · ${rate(s.click, s.visit)}</small></div>`).join("");
+  $("rows").innerHTML = days.map(x => `<tr><td>${x.day}</td><td>${n(x.visit)}</td><td>${n(x.click)}</td><td>${rate(x.click, x.visit)}</td></tr>`).join("");
 }
-function show(d) {
-  const sum = n => d.days.slice(0, n).reduce((a, x) => ({ visit: a.visit + x.visit, click: a.click + x.click }), { visit: 0, click: 0 });
-  const blocks = [["Today", sum(1)], ["Last 7 days", sum(7)], ["All time", d.total]];
-  $("kpis").innerHTML = blocks.map(([t, s]) => `<div class="kpi"><span>${t}</span><b>${s.visit.toLocaleString()}</b><small>visits · ${s.click.toLocaleString()} clicks · ${rate(s.click, s.visit)}</small></div>`).join("");
-  $("rows").innerHTML = d.days.map(x => `<tr><td>${x.day}</td><td>${x.visit}</td><td>${x.click}</td><td>${rate(x.click, x.visit)}</td></tr>`).join("");
+async function open_() {
   $("login").hidden = true; $("dash").hidden = false; $("err").hidden = true;
+  const total = { visit: null, click: null };
+  const days = Array.from({ length: 30 }, (_, i) => ({ day: dayStr(new Date(Date.now() - i * 864e5)), visit: null, click: null }));
+  render(total, days);
+  const jobs = [get("visit").then(v => total.visit = v), get("click").then(v => total.click = v),
+    ...days.flatMap(d => [get("visit-" + d.day).then(v => d.visit = v), get("click-" + d.day).then(v => d.click = v)])];
+  jobs.forEach(j => j.then(() => render(total, days)));
+  await Promise.all(jobs);
+  if (total.visit === null) { $("err").textContent = "Couldn't reach the counter service (abacus.jasoncameron.dev). Try another network or turn off ad blockers."; $("err").hidden = false; }
 }
-async function go(pw) {
-  try { show(await load(pw)); sessionStorage.setItem("aj_pw", pw); }
-  catch (e) { sessionStorage.removeItem("aj_pw"); $("err").textContent = e.message; $("err").hidden = false; $("login").hidden = false; $("dash").hidden = true; }
-}
-$("login").addEventListener("submit", e => { e.preventDefault(); go($("pw").value); });
-$("logout").addEventListener("click", () => { sessionStorage.removeItem("aj_pw"); location.reload(); });
-const saved = sessionStorage.getItem("aj_pw"); if (saved) go(saved);
+$("login").addEventListener("submit", e => {
+  e.preventDefault();
+  if ($("pw").value.trim() === PASSWORD) { try { sessionStorage.setItem("aj_ok", "1"); } catch {} open_(); }
+  else { $("err").textContent = "Wrong password"; $("err").hidden = false; }
+});
+$("logout").addEventListener("click", () => { try { sessionStorage.removeItem("aj_ok"); } catch {} location.reload(); });
+try { if (sessionStorage.getItem("aj_ok") === "1") open_(); } catch {}
 </script>
 </body>
 </html>

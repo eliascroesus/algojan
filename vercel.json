@@ -2,8 +2,40 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/", "destination": "/ai-trading", "permanent": false },
-    { "source": "/bots", "destination": "/ai-trading", "permanent": false },
-    { "source": "/v2/discord", "destination": "/ai-trading", "permanent": false }
+    {
+      "source": "/",
+      "destination": "/ai-trading",
+      "permanent": false
+    },
+    {
+      "source": "/bots",
+      "destination": "/ai-trading",
+      "permanent": false
+    },
+    {
+      "source": "/v2/discord",
+      "destination": "/ai-trading",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/admin",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/admin/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        }
+      ]
+    }
   ]
 }
