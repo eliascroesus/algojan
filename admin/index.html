@@ -49,11 +49,17 @@
 <script>
 const $ = id => document.getElementById(id);
 const rate = (c, v) => v ? (c / v * 100).toFixed(1) + "%" : "–";
+// Simple on purpose: the password is checked right here, the numbers come from the free Abacus counters
+// that /ai-trading counts up (no database to set up).
+const PASSWORD = "Uncapped123";
+const COUNTER = "https://abacus.jasoncameron.dev/get/algojan-ai-trading/";
+const get = k => fetch(COUNTER + k).then(r => r.ok ? r.json() : { value: 0 }).then(d => +d.value || 0).catch(() => 0);
+const dayStr = d => d.toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 async function load(pw) {
-  const r = await fetch("/api/stats", { headers: { "x-admin-password": pw } });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error || "Error " + r.status);
-  return d;
+  if (pw !== PASSWORD) throw new Error("Wrong password");
+  const days = Array.from({ length: 30 }, (_, i) => dayStr(new Date(Date.now() - i * 864e5)));
+  const [tv, tc, ...rest] = await Promise.all([get("visit"), get("click"), ...days.flatMap(d => [get("visit-" + d), get("click-" + d)])]);
+  return { total: { visit: tv, click: tc }, days: days.map((d, i) => ({ day: d, visit: rest[i * 2], click: rest[i * 2 + 1] })) };
 }
 function show(d) {
   const sum = n => d.days.slice(0, n).reduce((a, x) => ({ visit: a.visit + x.visit, click: a.click + x.click }), { visit: 0, click: 0 });

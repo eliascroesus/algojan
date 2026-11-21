@@ -17,15 +17,11 @@ Every "Get Access Now" button goes straight to Jan's Whop product page
 
 ### Admin: `/admin`
 
-Shows visits to `/ai-trading` and "Get Access Now" clicks (today, last 7 days, all time, and a 30-day table).
-The password is `Uncapped123`. To change it, set `ADMIN_PASSWORD` in Vercel.
-
-**Connect the database once:** Vercel → the project → Storage → Create a Redis database (Upstash for Redis or Redis,
-both have free plans) → Connect to this project (all environments) → Redeploy. Any of the settings Vercel adds works
-(`REDIS_URL`, `KV_REST_API_URL`/`_TOKEN`, `UPSTASH_REDIS_REST_URL`/`_TOKEN`, or the same with a custom prefix).
-Until then the page works but nothing is counted, and /admin lists which database settings it can see.
+Shows visits to `/ai-trading` and "Get Access Now" clicks (today, last 7 days, all time, 30-day table).
+Password `Uncapped123` (in `admin/index.html`). No setup: the numbers are kept by Abacus, a free public counter
+service (abacus.jasoncameron.dev, namespace `algojan-ai-trading`). Kept simple on purpose, so the password is
+visible in the page source and anyone who finds the counter names could add to them; fine for rough numbers.
 To stop counting your own visits, open `/ai-trading?rt=off` once on that device.
-Optional: `TRACK_TIMEZONE` (default `America/New_York`) sets which day a visit counts for.
 
 ## Dark page details (was `/v2/discord`)
 

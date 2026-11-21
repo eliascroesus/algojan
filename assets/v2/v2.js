@@ -191,7 +191,10 @@ const V2 = {
 
   /* ---------- join modal ---------- */
   /* ---------- tracking for /admin: a visit per page load, a click per "Get Access Now" ---------- */
-  const track = ev => { try { const b = JSON.stringify({ e: ev }); if (!(navigator.sendBeacon && navigator.sendBeacon("/api/track", new Blob([b], { type: "text/plain" })))) fetch("/api/track", { method: "POST", body: b, keepalive: true }).catch(() => {}); } catch {} };
+  // Counts go to Abacus (free counter service, no account): a total and a per-day counter for each event.
+  const COUNTER = "https://abacus.jasoncameron.dev/hit/algojan-ai-trading/";
+  const today = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const track = ev => { [ev, ev + "-" + today()].forEach(k => fetch(COUNTER + k, { keepalive: true, mode: "cors" }).catch(() => {})); };
   function ctas() {
     if (/[?&]rt=off\b/.test(location.search)) { try { localStorage.setItem("algojan_notrack", "1"); } catch {} }
     let off = false; try { off = localStorage.getItem("algojan_notrack") === "1"; } catch {}
